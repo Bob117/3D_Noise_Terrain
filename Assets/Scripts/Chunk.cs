@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using UnityEngine;
-using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
 
 public class Chunk : MonoBehaviour
 {
+    public int chunkID;
+
     public int chunkWidth;
     public int chunkHeight;
 
@@ -173,15 +173,15 @@ public class Chunk : MonoBehaviour
         int offsetUV = 0;
         int offsetTriangles = 0;
 
-        Vector3 left_top_front = new Vector3(-0.5f + cubePosLocal.x, 0.5f + cubePosLocal.y, -0.5f + cubePosLocal.z); //left_top_front
-        Vector3 right_top_front = new Vector3(0.5f + cubePosLocal.x, 0.5f + cubePosLocal.y, -0.5f + cubePosLocal.z); //right_top_front
-        Vector3 left_bottom_front = new Vector3(-0.5f + cubePosLocal.x, -0.5f + cubePosLocal.y, -0.5f + cubePosLocal.z); //left_bottom_front
-        Vector3 right_bottom_front = new Vector3(0.5f + cubePosLocal.x, -0.5f + cubePosLocal.y, -0.5f + cubePosLocal.z); //right_bottom_front
+        Vector3 left_top_front = new Vector3(cubePosLocal.x, 1.0f + cubePosLocal.y,cubePosLocal.z); //left_top_front
+        Vector3 right_top_front = new Vector3(1.0f + cubePosLocal.x, 1.0f + cubePosLocal.y,cubePosLocal.z); //right_top_front
+        Vector3 left_bottom_front = new Vector3(cubePosLocal.x, cubePosLocal.y, cubePosLocal.z); //left_bottom_front
+        Vector3 right_bottom_front = new Vector3(1.0f + cubePosLocal.x,  cubePosLocal.y, cubePosLocal.z); //right_bottom_front
 
-        Vector3 left_top_back = new Vector3(-0.5f + cubePosLocal.x, 0.5f + cubePosLocal.y, 0.5f + cubePosLocal.z); //left_top_back
-        Vector3 right_top_back = new Vector3(0.5f + cubePosLocal.x, 0.5f + cubePosLocal.y, 0.5f + cubePosLocal.z); //right_top_back
-        Vector3 left_bottom_back = new Vector3(-0.5f + cubePosLocal.x, -0.5f + cubePosLocal.y, 0.5f + cubePosLocal.z); //left_bottom_back
-        Vector3 right_bottom_back = new Vector3(0.5f + cubePosLocal.x, -0.5f + cubePosLocal.y, 0.5f + cubePosLocal.z); //right_bottom_back
+        Vector3 left_top_back = new Vector3(cubePosLocal.x, 1.0f + cubePosLocal.y, 1.0f + cubePosLocal.z); //left_top_back
+        Vector3 right_top_back = new Vector3(1.0f + cubePosLocal.x, 1.0f + cubePosLocal.y, 1.0f + cubePosLocal.z); //right_top_back
+        Vector3 left_bottom_back = new Vector3(cubePosLocal.x, cubePosLocal.y, 1.0f + cubePosLocal.z); //left_bottom_back
+        Vector3 right_bottom_back = new Vector3(1.0f + cubePosLocal.x, cubePosLocal.y, 1.0f + cubePosLocal.z); //right_bottom_back
 
         Vector3 normal_front = new Vector3(0, 0, -1);
         Vector3 normal_left = new Vector3(-1, 0, 0);

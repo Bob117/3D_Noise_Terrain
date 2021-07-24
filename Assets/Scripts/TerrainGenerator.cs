@@ -12,6 +12,11 @@ public struct ChunkNeighborCheckResult
     public bool hasNeighborChunkCube;
 }
 
+public struct ChunkData
+{
+    public Chunk chunk;
+    public int physicalChunkId;
+}
 
 struct CreateChunk: IJobParallelFor
 {
@@ -33,6 +38,10 @@ public class TerrainGenerator : MonoBehaviour
     public static TerrainGenerator Instance { get; private set; }
 
 
+    public GameObject player;
+    public int currentPlayerChunk;
+
+
     public int width;
     public int height;
     public int lenght;
@@ -43,7 +52,7 @@ public class TerrainGenerator : MonoBehaviour
 
     public int nrOfCubes;
     public int nrOfFaces;
-    public long createTime = 0;
+    public long createTime;
 
     // public MapGenerator mapGenerator;
 
@@ -64,6 +73,10 @@ public class TerrainGenerator : MonoBehaviour
     Stopwatch st = new Stopwatch();
 
 
+
+  
+
+
     void Awake()
     {
         Instance = this;
@@ -73,7 +86,11 @@ public class TerrainGenerator : MonoBehaviour
 
     public void Start()
     {
-       
+
+
+        currentPlayerChunk = GetChunkIDFromPos(player.transform.position);
+
+        Debug.Log("Player started in chunk: " + currentPlayerChunk);
     }
 
     private void Update()
@@ -83,6 +100,12 @@ public class TerrainGenerator : MonoBehaviour
             CreateTerrain();
             isCreated = true;
         }
+
+        if(isCreated)
+        {
+            UpdateDynamicChunkLoading();
+        }
+
     }
 
 
@@ -97,7 +120,7 @@ public class TerrainGenerator : MonoBehaviour
     void CreateTerrain()
     {
 
-
+   
         chunks = new Chunk[width* height* lenght];
 
         Vector3 position = new Vector3(0, 0, 0);
@@ -113,9 +136,12 @@ public class TerrainGenerator : MonoBehaviour
                     position.y = y;
                     position.z = z;
 
-                    chunks[x + height * (y + lenght * z)] = Instantiate(ChunkPrefab, position, Quaternion.identity).GetComponent<Chunk>();
-                    chunks[x + height * (y + lenght * z)].InitChunk(position, chunkWidth, chunkHeight);
+                    int chunkArrayIndex = x + height * (y + lenght * z);
 
+                    chunks[chunkArrayIndex] = Instantiate(ChunkPrefab, position, Quaternion.identity).GetComponent<Chunk>();
+                    chunks[chunkArrayIndex].InitChunk(position, chunkWidth, chunkHeight);
+
+                    chunks[chunkArrayIndex].chunkID = GetChunkIDFromPos(chunks[chunkArrayIndex].transform.position);
                     nrOfCreatedChunks++;
                 }
             }
@@ -146,6 +172,9 @@ public class TerrainGenerator : MonoBehaviour
         st.Stop();
         createTime = st.ElapsedMilliseconds;
         Debug.Log(string.Format("Creating world took {0} ms to complete", createTime));
+
+        //player.transform.position = new Vector3((width * chunkWidth / 2)+0.5f, height, (lenght * chunkWidth / 2) + 0.5f);
+
     }
     
 
@@ -170,7 +199,8 @@ public class TerrainGenerator : MonoBehaviour
             int posZ = faceNormal.z == 0 ? (int)cubePosLocal.z : (int)cubePosLocal.z - (chunkWidth - 1) * (int)faceNormal.z;
 
             Vector3Int blockIndex = new Vector3Int(posX, posY, posZ);
-            result.hasNeighborChunkCube = chunks[chunkIndex.x + height * (chunkIndex.y + lenght * chunkIndex.z)].HasBlockAt(blockIndex);
+            result.hasNeighborChunkCube = chunks[GetChunkIDFromPos(chunkIndex)].HasBlockAt(blockIndex);
+
             result.hasNeighborChunk = true;
         }
         else
@@ -181,9 +211,76 @@ public class TerrainGenerator : MonoBehaviour
         return result;
     }
 
+    public int GetChunkIDFromPos(Vector3 pos)
+    {
+        Vector3Int posInt = Vector3Int.CeilToInt(pos);
+        return posInt.x + height * (posInt.y + lenght * posInt.z);
+    }
+
+    private void UpdateDynamicChunkLoading()
+    {
+        if( chunks.Length > 0)
+        {
+            Vector3 playerPos = player.transform.position;
+            if (currentPlayerChunk != GetChunkIDFromPos(playerPos) && IsChunkeLoaded(GetChunkIDFromPos(playerPos)) == false)
+            {
+                Debug.Log("Player is in chunk: " + GetChunkIDFromPos(playerPos));
 
 
-  
+                ChunkData chunkData = GetFurthestChunkFromPos(playerPos);
+                Chunk chunkToMove = chunkData.chunk;
+              
+                chunkToMove.transform.position = new Vector3((int)(playerPos.x / chunkWidth), (int)(playerPos.y / chunkHeight), (int)(playerPos.z / chunkWidth));
 
-    
+
+
+                chunkToMove.chunkID = GetChunkIDFromPos(chunkToMove.transform.position);
+            }
+
+            currentPlayerChunk = GetChunkIDFromPos(playerPos);
+
+
+        }
+
+
+    }
+
+    private ChunkData GetFurthestChunkFromPos(Vector3 pos)
+    {
+        ChunkData result;
+        result.chunk = chunks[0];
+        result.physicalChunkId = 0;
+        float furthestDistance = (chunks[0].transform.position - pos).magnitude;
+
+
+        for (int i = 1; i < chunks.Length; i++)
+        {
+            float distance = (chunks[i].transform.position - pos).magnitude;
+            //Debug.Log("ID: " + chunks[i].chunkID + ", " + distance + ", " + furthestDistance);
+            if(distance > furthestDistance)
+            {
+                result.chunk = chunks[i];
+                result.physicalChunkId = chunks[i].chunkID;
+                furthestDistance = distance;
+            }
+        }
+
+        return result;
+    }
+
+    private bool IsChunkeLoaded(int chunkID)
+    {
+        for (int i = 0; i < chunks.Length; i++)
+        {
+            if (chunks[i].chunkID == chunkID)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
 }
