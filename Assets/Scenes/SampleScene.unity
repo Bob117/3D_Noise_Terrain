@@ -174,12 +174,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90da33e1abac4ea419191c9034a020e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 2
-  height: 2
-  lenght: 2
+  width: 5
+  height: 5
+  lenght: 5
   ChunkPrefab: {fileID: 8502089207190764890, guid: 2a07317aba954c746949f0ad4bd70eb5, type: 3}
-  chunkWidth: 2
-  chunkHeight: 2
+  chunkWidth: 10
+  chunkHeight: 10
   nrOfCubes: 0
   nrOfFaces: 0
   createTime: 0

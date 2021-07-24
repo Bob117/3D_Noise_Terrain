@@ -5,7 +5,6 @@ using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
 
-
 public class Chunk : MonoBehaviour
 {
     public int chunkWidth;
@@ -33,8 +32,16 @@ public class Chunk : MonoBehaviour
     private const int NR_OF_TRIANGLES_PER_FACE = 6;
 
     private bool[,,] chunkBlocks;
+    private Mesh mesh;
+
+    private Vector3[] vertices;
+    private Vector3[] normals;
+    private Vector2[] uv;
+    private int[] triangles;
+
 
     Stopwatch st = new Stopwatch();
+
 
     // Start is called before the first frame update
     void Start()
@@ -53,7 +60,13 @@ public class Chunk : MonoBehaviour
 
     public void InitChunk(Vector3 chunkPos, int width, int height)
     {
-        
+        mesh = new Mesh();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+
+
+
+
+
         chunkPosition = chunkPos;
         chunkWidth = width;
         chunkHeight = height;
@@ -381,7 +394,7 @@ public class Chunk : MonoBehaviour
     }
 
 
-    public void CreateChunk()
+    public void CreateMeshData() //Multi-threaded
     {
         st.Start();
 
@@ -416,20 +429,34 @@ public class Chunk : MonoBehaviour
             }
         }
 
+        vertices = new Vector3[4 * nrOfFaces];
+        normals = new Vector3[4 * nrOfFaces];
+        uv = new Vector2[4 * nrOfFaces];
+        triangles = new int[6 * nrOfFaces];
 
-        Vector3[] vertices = new Vector3[4 * nrOfFaces];
-        Vector3[] normals = new Vector3[4 * nrOfFaces];
-        Vector2[] uv = new Vector2[4 * nrOfFaces];
-        int[] triangles = new int[6 * nrOfFaces];
 
         System.Array.Copy(verticesBuffer, vertices, vertices.Length);
         System.Array.Copy(normalsBuffer, normals, normals.Length );
         System.Array.Copy(uvBuffer, uv, uv.Length);
         System.Array.Copy(trianglesBuffer, triangles, triangles.Length);
 
-        Mesh mesh = new Mesh();
+       
 
-        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+
+
+
+        st.Stop();
+        createTime = st.ElapsedMilliseconds;
+        Debug.Log(string.Format("Creating chunk mesh data took {0} ms to complete", createTime));
+
+
+    }
+
+    public void ApplyMeshData()
+    {
+
+
+
         mesh.SetVertices(vertices);
         mesh.uv = uv;
         mesh.SetTriangles(triangles, 0);
@@ -440,17 +467,9 @@ public class Chunk : MonoBehaviour
 
         GetComponent<MeshCollider>().sharedMesh = mesh;
 
-
-
-
-
         TerrainGenerator.Instance.nrOfCubes += nrOfCubes;
         TerrainGenerator.Instance.nrOfFaces += nrOfFaces;
 
-        st.Stop();
-        createTime = st.ElapsedMilliseconds;
-        Debug.Log(string.Format("Creating chunk mesh took {0} ms to complete", createTime));
-
-
+        
     }
 }

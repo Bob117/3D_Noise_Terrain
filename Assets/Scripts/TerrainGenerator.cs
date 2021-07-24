@@ -3,12 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
+using Unity.Jobs;
+using Unity.Collections;
 
 public struct ChunkNeighborCheckResult
 {
     public bool hasNeighborChunk;
     public bool hasNeighborChunkCube;
 }
+
+
+struct CreateChunk: IJobParallelFor
+{
+  
+
+    public void Execute(int index)
+    {
+     //-- Debug.Log("Chunk id: " + index);
+        TerrainGenerator.Instance.GetChunk(index).CreateMeshData();
+    }
+}
+
 
 public class TerrainGenerator : MonoBehaviour
 {
@@ -41,7 +56,7 @@ public class TerrainGenerator : MonoBehaviour
 
 
 
-    private GameObject[,,] chunks;
+    public static Chunk[] chunks;
     private int nrOfCreatedChunks;
 
     private bool isCreated = false;
@@ -70,15 +85,24 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
+
+
+    
+    public Chunk GetChunk(int id)
+    {
+        return chunks[id];
+
+    }
+
     void CreateTerrain()
     {
 
 
-        chunks = new GameObject[width, height, lenght];
+        chunks = new Chunk[width* height* lenght];
 
         Vector3 position = new Vector3(0, 0, 0);
 
-        int i = 0;
+        //int i = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -89,23 +113,34 @@ public class TerrainGenerator : MonoBehaviour
                     position.y = y;
                     position.z = z;
 
-                    chunks[x, y, z] = Instantiate(ChunkPrefab, position, Quaternion.identity);
-                    chunks[x, y, z].GetComponent<Chunk>().InitChunk(position, chunkWidth, chunkHeight);
+                    chunks[x + height * (y + lenght * z)] = Instantiate(ChunkPrefab, position, Quaternion.identity).GetComponent<Chunk>();
+                    chunks[x + height * (y + lenght * z)].InitChunk(position, chunkWidth, chunkHeight);
 
                     nrOfCreatedChunks++;
                 }
             }
         }
         st.Start();
-        for (int x = 0; x < width; x++)
+        /* 
+
+         for (int i = 0; i < chunks.Length; i++)
+         {
+             GetChunk(i).GetComponent<Chunk>().CreateMeshData();
+         }
+        */
+/*   */
+        CreateChunk jobData = new CreateChunk();
+  
+
+        // Schedule the job with one Execute per index in the results array and only 1 item per processing batch
+        JobHandle handle = jobData.Schedule(chunks.Length, 1);
+
+        // Wait for the job to complete
+        handle.Complete();
+     
+        for (int i = 0; i < chunks.Length; i++)
         {
-            for (int y = 0; y < height; y++)
-            {
-                for (int z = 0; z < lenght; z++)
-                {
-                    chunks[x, y, z].GetComponent<Chunk>().CreateChunk();
-                }
-            }
+            GetChunk(i).GetComponent<Chunk>().ApplyMeshData();
         }
 
         st.Stop();
@@ -135,7 +170,7 @@ public class TerrainGenerator : MonoBehaviour
             int posZ = faceNormal.z == 0 ? (int)cubePosLocal.z : (int)cubePosLocal.z - (chunkWidth - 1) * (int)faceNormal.z;
 
             Vector3Int blockIndex = new Vector3Int(posX, posY, posZ);
-            result.hasNeighborChunkCube = chunks[chunkIndex.x, chunkIndex.y, chunkIndex.z].GetComponent<Chunk>().HasBlockAt(blockIndex);
+            result.hasNeighborChunkCube = chunks[chunkIndex.x + height * (chunkIndex.y + lenght * chunkIndex.z)].HasBlockAt(blockIndex);
             result.hasNeighborChunk = true;
         }
         else
