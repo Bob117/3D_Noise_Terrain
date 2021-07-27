@@ -2,36 +2,12 @@
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-public struct ChunkID
-{
-    public int x;
-    public int y;
-    public int z;
 
-    public void SetNewID(ChunkID newID)
-    {
-        x = newID.x;
-        y = newID.y;
-        z = newID.z;
-    }
-
-    public bool IsSameID(ChunkID otherID)
-    {
-        if (x == otherID.x &&
-            y == otherID.y &&
-            z == otherID.z)
-        {
-            return true;
-        }
-
-        return false;
-    }
-}
 
 
 public class Chunk : MonoBehaviour
 {
-    public ChunkID chunkID;
+    public Vector3Int chunkID;
     public int physicalChunkID;
 
     public int chunkWidth;

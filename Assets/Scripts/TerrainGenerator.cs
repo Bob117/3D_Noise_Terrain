@@ -37,7 +37,7 @@ public class TerrainGenerator : MonoBehaviour
     public GameObject marker;
 
     public GameObject player;
-    public ChunkID currentPlayerChunkID;
+    public Vector3Int currentPlayerChunkID;
 
 
     public int width;
@@ -187,11 +187,11 @@ public class TerrainGenerator : MonoBehaviour
         result.hasNeighborChunk = false; 
         result.hasNeighborChunkCube = false;
 
-        Vector3Int chunkIndex = Vector3Int.CeilToInt(chunkPos+ faceNormal);
+        Vector3Int chunkID = Vector3Int.CeilToInt(chunkPos+ faceNormal);
 
-        if (chunkIndex.x >= 0 && chunkIndex.x < width &&
-            chunkIndex.y >= 0 && chunkIndex.y < height &&
-            chunkIndex.z >= 0 && chunkIndex.z < lenght)
+
+        int physicalChunkID = GetPhysicalChunkID(chunkID);
+        if (physicalChunkID >= 0)
         {
             //Only change the vale of the normal axis, change it to the oposit pos 
 
@@ -200,7 +200,7 @@ public class TerrainGenerator : MonoBehaviour
             int posZ = faceNormal.z == 0 ? (int)cubePosLocal.z : (int)cubePosLocal.z - (chunkWidth - 1) * (int)faceNormal.z;
 
             Vector3Int blockIndex = new Vector3Int(posX, posY, posZ);
-            //result.hasNeighborChunkCube = chunks[GetChunkIDFromPos(chunkIndex)].HasBlockAt(blockIndex); //Need fix!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            result.hasNeighborChunkCube = chunks[physicalChunkID].HasBlockAt(blockIndex); 
 
             result.hasNeighborChunk = true;
         }
@@ -212,9 +212,12 @@ public class TerrainGenerator : MonoBehaviour
         return result;
     }
 
-    public ChunkID GetChunkIDFromPos(Vector3 pos) //Need fix
+
+    
+
+    public Vector3Int GetChunkIDFromPos(Vector3 pos) //Need fix
     {
-        ChunkID chunkID;
+        Vector3Int chunkID = new Vector3Int();
 
         chunkID.x = (int)pos.x;
         chunkID.y = (int)pos.y;
@@ -237,7 +240,7 @@ public class TerrainGenerator : MonoBehaviour
 
 
 
-            if (currentPlayerChunkID.IsSameID(GetPlayerChunkID()) && IsChunkeLoaded(GetPlayerChunkID()) == false)
+            if (currentPlayerChunkID != GetPlayerChunkID() && IsChunkeLoaded(GetPlayerChunkID()) == false)
             {
                 Debug.Log("Player is in chunk: " + GetChunkIDFromPos(playerPos));
 
@@ -247,8 +250,8 @@ public class TerrainGenerator : MonoBehaviour
 
 
 
-                ChunkID newChunkID = GetChunkIDFromPos(chunkToMove.transform.position);
-                chunkToMove.chunkID.SetNewID(newChunkID);
+                Vector3Int newChunkID = GetChunkIDFromPos(chunkToMove.transform.position);
+                chunkToMove.chunkID = newChunkID;
 
 
 
@@ -285,11 +288,11 @@ public class TerrainGenerator : MonoBehaviour
         return chunk;
     }
 
-    private bool IsChunkeLoaded(ChunkID chunkID)
+    private bool IsChunkeLoaded(Vector3Int chunkID)
     {
         for (int i = 0; i < chunks.Length; i++)
         {
-            if(chunks[i].chunkID.IsSameID(chunkID))
+            if(chunks[i].chunkID == chunkID)
             {
                 return true;
             }
@@ -298,8 +301,21 @@ public class TerrainGenerator : MonoBehaviour
         return false;
     }
 
+    private int GetPhysicalChunkID(Vector3Int chunkID)
+    {
+        for (int i = 0; i < chunks.Length; i++)
+        {
+            if (chunks[i].chunkID == chunkID)
+            {
+                return i;
+            }
+        }
 
-    public ChunkID GetPlayerChunkID()
+        return -1;
+    }
+
+
+    public Vector3Int GetPlayerChunkID()
     {
         Vector3 playerPos = player.transform.position;
         playerPos.x = (int)playerPos.x;
