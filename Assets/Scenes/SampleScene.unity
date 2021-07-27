@@ -179,8 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90da33e1abac4ea419191c9034a020e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  marker: {fileID: 0}
   player: {fileID: 59053192}
-  currentPlayerChunk: 0
   width: 3
   height: 1
   lenght: 3
@@ -327,6 +327,34 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3020027274688611581, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 357.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020027274688611581, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020027274688611581, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020027274688611581, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020027274688611581, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 17.884758
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020027274688611581, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -702.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020027274688611581, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 94.65117
+      objectReference: {fileID: 0}
     - target: {fileID: 7345084842814242123, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -414,6 +442,18 @@ PrefabInstance:
     - target: {fileID: 7345084842814242127, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7771998497636087646, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_Text
+      value: 'Player Chunk:'
+      objectReference: {fileID: 0}
+    - target: {fileID: 7771998497636087646, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7771998497636087646, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
+      propertyPath: m_FontData.m_MinSize
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 259ef46122e82fc41b73079b56fd38fc, type: 3}
@@ -684,15 +724,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
-      propertyPath: m_LocalPosition.y
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_LocalRotation.x
@@ -737,6 +777,10 @@ PrefabInstance:
     - target: {fileID: 5757198946143670844, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5757198946143670844, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8342451493911254036, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_Name

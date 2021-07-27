@@ -57,5 +57,6 @@ public class HUDScript : MonoBehaviour
             minFpsText.text = "Min FPS: " + minFps;
         }
 
+
     }
 }
