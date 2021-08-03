@@ -182,15 +182,16 @@ MonoBehaviour:
   marker: {fileID: 0}
   player: {fileID: 59053192}
   currentPlayerChunkID: {x: 0, y: 0, z: 0}
-  width: 3
+  width: 5
   height: 1
-  lenght: 3
+  lenght: 5
   ChunkPrefab: {fileID: 8502089207190764890, guid: 2a07317aba954c746949f0ad4bd70eb5, type: 3}
   chunkWidth: 1
   chunkHeight: 2
   nrOfCubes: 0
   nrOfFaces: 0
   createTime: 0
+  emptyChunks: []
 --- !u!4 &792070692
 Transform:
   m_ObjectHideFlags: 0

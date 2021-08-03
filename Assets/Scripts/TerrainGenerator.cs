@@ -65,6 +65,8 @@ public class TerrainGenerator : MonoBehaviour
 
     public static Chunk[] chunks;
     public Vector3Int[,,] areaOfPlay; //3D grid with chunk offsets relativ to the player. Add the player pos to this to get chunk id.
+    public List<Vector3Int> emptyChunks;
+
     private int nrOfCreatedChunks;
 
     private bool isCreated = false;
@@ -138,6 +140,19 @@ public class TerrainGenerator : MonoBehaviour
         {
             UpdateDynamicChunkLoading();
         }
+
+
+
+
+
+        if (Input.GetKeyUp(KeyCode.Backspace))
+        {
+
+            FillEmptyChunk();
+        }
+
+
+
 
     }
 
@@ -246,7 +261,7 @@ public class TerrainGenerator : MonoBehaviour
 
     
 
-    public Vector3Int GetChunkIDFromPos(Vector3 pos) //Need fix
+    public Vector3Int GetChunkIDFromPos(Vector3 pos) //Need fix?
     {
         Vector3Int chunkID = new Vector3Int();
 
@@ -271,29 +286,45 @@ public class TerrainGenerator : MonoBehaviour
 
 
 
-            if (currentPlayerChunkID != GetChunkIDFromPos(playerPos) && IsChunkeLoaded(GetChunkIDFromPos(playerPos)) == false)
+            if (currentPlayerChunkID != GetChunkIDFromPos(playerPos) )//&& IsChunkeLoaded(GetChunkIDFromPos(playerPos)) == false)
             {
                 Debug.Log("Player is in chunk: " + GetChunkIDFromPos(playerPos));
 
-                Chunk chunkToMove = GetFurthestChunkFromPos(playerPos);
-
-                chunkToMove.transform.position = new Vector3((int)(playerPos.x * chunkWidth), (int)(playerPos.y * chunkHeight), (int)(playerPos.z * chunkWidth));
-
-
-
-                Vector3Int newChunkID = GetChunkIDFromPos(chunkToMove.transform.position);
-                chunkToMove.chunkID = newChunkID;
-
-
+                
+                CalculateEmptyChunksInAreaOfPlay();
 
             }
 
             currentPlayerChunkID = GetChunkIDFromPos(playerPos);
 
-
+            FillEmptyChunk();
         }
 
 
+    }
+
+    private void FillEmptyChunk()
+    {
+        if (emptyChunks.Count > 0)
+        {
+
+            Vector3 playerPos = player.transform.position;
+            playerPos.x = (int)playerPos.x;
+            playerPos.y = (int)playerPos.y;
+            playerPos.z = (int)playerPos.z;
+            int index = 0;
+
+            Chunk chunkToMove = GetFurthestChunkFromPos(playerPos);
+
+            chunkToMove.transform.position = new Vector3(emptyChunks[index].x * chunkWidth,
+                                                         emptyChunks[index].y * chunkHeight,
+                                                         emptyChunks[index].z * chunkWidth);
+
+            Vector3Int newChunkID = GetChunkIDFromPos(chunkToMove.transform.position);
+            chunkToMove.chunkID = newChunkID;
+            
+            emptyChunks.RemoveAt(index);
+        }
     }
 
     private Chunk GetFurthestChunkFromPos(Vector3 pos)
@@ -319,8 +350,54 @@ public class TerrainGenerator : MonoBehaviour
         return chunk;
     }
 
-    private bool IsChunkeLoaded(Vector3Int chunkID)
+    private void CalculateEmptyChunksInAreaOfPlay()
     {
+        emptyChunks.Clear();
+
+        Vector3Int playerPos = Vector3Int.FloorToInt(player.transform.position);
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int z = 0; z < lenght; z++)
+                {
+                    if (IsChunkeLoaded(areaOfPlay[x, y, z] + playerPos) == false)
+                    {
+                        AddChunkIDToEmpyChunksQueue(areaOfPlay[x, y, z] + playerPos);
+                    }
+                }
+            }
+        }
+
+        print("Nr of empty chunks: " + emptyChunks.Count);
+    }
+
+    private void AddChunkIDToEmpyChunksQueue(Vector3Int chunkID) //Doesnt seem to work as intended
+    {
+        //Could add so one cant add the same chunk more than once
+
+        Vector3Int playerPos = Vector3Int.FloorToInt(player.transform.position);
+        float distanceToPlayer = (playerPos - chunkID).magnitude;
+
+        int indexToAddTo = 0;
+
+        for(int i = 0; i < emptyChunks.Count; i++)
+        {
+            if ((playerPos - emptyChunks[i]).magnitude < distanceToPlayer)
+            {
+                indexToAddTo = i;
+            }
+        }
+
+        emptyChunks.Insert(indexToAddTo, chunkID);
+
+
+    }
+
+
+    private bool IsChunkeLoaded(Vector3Int chunkID)
+    { 
         for (int i = 0; i < chunks.Length; i++)
         {
             if(chunks[i].chunkID == chunkID)
