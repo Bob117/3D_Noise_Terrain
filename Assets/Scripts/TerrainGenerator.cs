@@ -64,6 +64,7 @@ public class TerrainGenerator : MonoBehaviour
 
 
     public static Chunk[] chunks;
+    public Vector3Int[,,] areaOfPlay; //3D grid with chunk offsets relativ to the player. Add the player pos to this to get chunk id.
     private int nrOfCreatedChunks;
 
     private bool isCreated = false;
@@ -85,8 +86,40 @@ public class TerrainGenerator : MonoBehaviour
     public void Start()
     {
 
+        areaOfPlay = new Vector3Int[width,height,lenght];
+
+        Vector3 position = new Vector3(0, 0, 0);
+
+        int i = 0;
+        int j = 0;
+        int k = 0;
+
+
+        for (float x = (-width * 0.5f); x < (width * 0.5f); x++)
+        {
+            j = 0;
+
+            for (float y = (-height * 0.5f); y < (height * 0.5f); y++)
+            {
+                k = 0;
+
+                for (float z = (-lenght * 0.5f); z < (lenght * 0.5f); z++)
+                {
+                    areaOfPlay[i, j, k] = new Vector3Int((int)(x - width) + width, (int)(y - height) + height, (int)(z - width) + width);
+                    print("["+ i +","+ j+","+ k+"] = " + areaOfPlay[i, j, k]);
+                    k++;
+                }
+                j++;
+            }
+            i++;
+        }
+
+
+
 
         currentPlayerChunkID = GetChunkIDFromPos(player.transform.position);
+
+
 
         Debug.Log("Player started in chunk: " + currentPlayerChunkID);
 
@@ -123,7 +156,7 @@ public class TerrainGenerator : MonoBehaviour
    
         chunks = new Chunk[width* height* lenght];
 
-        Vector3 position = new Vector3(0, 0, 0);
+        Vector3 position = player.transform.position;
 
         //int i = 0;
         for (int x = 0; x < width; x++)
@@ -132,17 +165,15 @@ public class TerrainGenerator : MonoBehaviour
             {
                 for (int z = 0; z < lenght; z++)
                 {
-                    position.x = x;
-                    position.y = y;
-                    position.z = z;
-
-     
+                    position = Vector3Int.FloorToInt(player.transform.position) + areaOfPlay[x, y, z];
 
                     chunks[nrOfCreatedChunks] = Instantiate(ChunkPrefab, position, Quaternion.identity).GetComponent<Chunk>();
                     chunks[nrOfCreatedChunks].InitChunk(position, chunkWidth, chunkHeight);
 
                     chunks[nrOfCreatedChunks].chunkID = GetChunkIDFromPos(chunks[nrOfCreatedChunks].transform.position);
                     chunks[nrOfCreatedChunks].physicalChunkID = nrOfCreatedChunks;
+
+
                     nrOfCreatedChunks++;
                 }
             }
@@ -219,9 +250,9 @@ public class TerrainGenerator : MonoBehaviour
     {
         Vector3Int chunkID = new Vector3Int();
 
-        chunkID.x = (int)pos.x;
-        chunkID.y = (int)pos.y;
-        chunkID.z = (int)pos.z;
+        chunkID.x = (int)(pos.x / chunkWidth);
+        chunkID.y = (int)(pos.y / chunkHeight);
+        chunkID.z = (int)(pos.z / chunkWidth);
 
 
 
@@ -240,13 +271,13 @@ public class TerrainGenerator : MonoBehaviour
 
 
 
-            if (currentPlayerChunkID != GetPlayerChunkID() && IsChunkeLoaded(GetPlayerChunkID()) == false)
+            if (currentPlayerChunkID != GetChunkIDFromPos(playerPos) && IsChunkeLoaded(GetChunkIDFromPos(playerPos)) == false)
             {
                 Debug.Log("Player is in chunk: " + GetChunkIDFromPos(playerPos));
 
                 Chunk chunkToMove = GetFurthestChunkFromPos(playerPos);
 
-                chunkToMove.transform.position = new Vector3((int)(playerPos.x / chunkWidth), (int)(playerPos.y / chunkHeight), (int)(playerPos.z / chunkWidth));
+                chunkToMove.transform.position = new Vector3((int)(playerPos.x * chunkWidth), (int)(playerPos.y * chunkHeight), (int)(playerPos.z * chunkWidth));
 
 
 
@@ -257,7 +288,7 @@ public class TerrainGenerator : MonoBehaviour
 
             }
 
-            currentPlayerChunkID = GetPlayerChunkID();
+            currentPlayerChunkID = GetChunkIDFromPos(playerPos);
 
 
         }
@@ -314,15 +345,5 @@ public class TerrainGenerator : MonoBehaviour
         return -1;
     }
 
-
-    public Vector3Int GetPlayerChunkID()
-    {
-        Vector3 playerPos = player.transform.position;
-        playerPos.x = (int)playerPos.x;
-        playerPos.y = (int)playerPos.y;
-        playerPos.z = (int)playerPos.z;
-
-        return GetChunkIDFromPos(playerPos);
-    }
 
 }

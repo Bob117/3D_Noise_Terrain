@@ -181,6 +181,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   marker: {fileID: 0}
   player: {fileID: 59053192}
+  currentPlayerChunkID: {x: 0, y: 0, z: 0}
   width: 3
   height: 1
   lenght: 3
@@ -724,7 +725,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -732,7 +733,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 124343407965865935, guid: 8f24847257edf402dbd372b6ddc16a9d, type: 3}
       propertyPath: m_LocalRotation.x
