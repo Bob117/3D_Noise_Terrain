@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
@@ -15,13 +15,13 @@ public struct ChunkNeighborCheckResult
 
 
 
-struct CreateChunk: IJobParallelFor
+struct CreateChunk : IJobParallelFor
 {
-  
+
 
     public void Execute(int index)
     {
-     //-- Debug.Log("Chunk id: " + index);
+        //-- Debug.Log("Chunk id: " + index);
         TerrainGenerator.Instance.GetChunk(index).CreateMeshData();
     }
 }
@@ -29,7 +29,7 @@ struct CreateChunk: IJobParallelFor
 
 public class TerrainGenerator : MonoBehaviour
 {
-   
+
 
 
     public static TerrainGenerator Instance { get; private set; }
@@ -75,7 +75,7 @@ public class TerrainGenerator : MonoBehaviour
 
 
 
-  
+
 
 
     void Awake()
@@ -88,7 +88,7 @@ public class TerrainGenerator : MonoBehaviour
     public void Start()
     {
 
-        areaOfPlay = new Vector3Int[width,height,lenght];
+        areaOfPlay = new Vector3Int[width, height, lenght];
 
         Vector3 position = new Vector3(0, 0, 0);
 
@@ -108,7 +108,7 @@ public class TerrainGenerator : MonoBehaviour
                 for (float z = (-lenght * 0.5f); z < (lenght * 0.5f); z++)
                 {
                     areaOfPlay[i, j, k] = new Vector3Int((int)(x - width) + width, (int)(y - height) + height, (int)(z - width) + width);
-                    print("["+ i +","+ j+","+ k+"] = " + areaOfPlay[i, j, k]);
+                    print("[" + i + "," + j + "," + k + "] = " + areaOfPlay[i, j, k]);
                     k++;
                 }
                 j++;
@@ -125,7 +125,7 @@ public class TerrainGenerator : MonoBehaviour
 
         Debug.Log("Player started in chunk: " + currentPlayerChunkID);
 
-        Application.targetFrameRate = 30;
+        //Application.targetFrameRate = 30;
     }
 
     private void Update()
@@ -136,7 +136,7 @@ public class TerrainGenerator : MonoBehaviour
             isCreated = true;
         }
 
-        if(isCreated)
+        if (isCreated)
         {
             UpdateDynamicChunkLoading();
         }
@@ -158,7 +158,7 @@ public class TerrainGenerator : MonoBehaviour
 
 
 
-    
+
     public Chunk GetChunk(int id)
     {
         return chunks[id];
@@ -168,10 +168,10 @@ public class TerrainGenerator : MonoBehaviour
     void CreateTerrain()
     {
 
-   
-        chunks = new Chunk[width* height* lenght];
 
-        Vector3 position = player.transform.position;
+        chunks = new Chunk[width * height * lenght];
+
+        Vector3 position;
 
         //int i = 0;
         for (int x = 0; x < width; x++)
@@ -180,12 +180,14 @@ public class TerrainGenerator : MonoBehaviour
             {
                 for (int z = 0; z < lenght; z++)
                 {
-                    position = Vector3Int.FloorToInt(player.transform.position) + areaOfPlay[x, y, z];
+                    position = Vector3Int.FloorToInt(player.transform.position);
+
+                    position += new Vector3(areaOfPlay[x, y, z].x * chunkWidth , areaOfPlay[x, y, z].y * chunkHeight , areaOfPlay[x, y, z].z * chunkWidth);
 
                     chunks[nrOfCreatedChunks] = Instantiate(ChunkPrefab, position, Quaternion.identity).GetComponent<Chunk>();
                     chunks[nrOfCreatedChunks].InitChunk(position, chunkWidth, chunkHeight);
 
-                    chunks[nrOfCreatedChunks].chunkID = GetChunkIDFromPos(chunks[nrOfCreatedChunks].transform.position);
+                    chunks[nrOfCreatedChunks].chunkID =  Vector3Int.RoundToInt(position);
                     chunks[nrOfCreatedChunks].physicalChunkID = nrOfCreatedChunks;
 
 
@@ -201,16 +203,16 @@ public class TerrainGenerator : MonoBehaviour
              GetChunk(i).GetComponent<Chunk>().CreateMeshData();
          }
         */
-/*   */
+        /*   */
         CreateChunk jobData = new CreateChunk();
-  
+
 
         // Schedule the job with one Execute per index in the results array and only 1 item per processing batch
         JobHandle handle = jobData.Schedule(chunks.Length, 1);
 
         // Wait for the job to complete
         handle.Complete();
-     
+
         for (int i = 0; i < chunks.Length; i++)
         {
             GetChunk(i).GetComponent<Chunk>().ApplyMeshData();
@@ -223,17 +225,17 @@ public class TerrainGenerator : MonoBehaviour
         //player.transform.position = new Vector3((width * chunkWidth / 2)+0.5f, height, (lenght * chunkWidth / 2) + 0.5f);
 
     }
-    
+
 
 
     public ChunkNeighborCheckResult BlockHasChunkNeighbor(Vector3 chunkPos, Vector3 cubePosLocal, Vector3 faceNormal)
     {
         ChunkNeighborCheckResult result = new ChunkNeighborCheckResult();
 
-        result.hasNeighborChunk = false; 
+        result.hasNeighborChunk = false;
         result.hasNeighborChunkCube = false;
 
-        Vector3Int chunkID = Vector3Int.CeilToInt(chunkPos+ faceNormal);
+        Vector3Int chunkID = Vector3Int.CeilToInt(chunkPos + faceNormal);
 
 
         int physicalChunkID = GetPhysicalChunkID(chunkID);
@@ -241,12 +243,12 @@ public class TerrainGenerator : MonoBehaviour
         {
             //Only change the vale of the normal axis, change it to the oposit pos 
 
-            int posX = faceNormal.x == 0 ? (int)cubePosLocal.x : (int)cubePosLocal.x - (chunkWidth-1) * (int)faceNormal.x;
+            int posX = faceNormal.x == 0 ? (int)cubePosLocal.x : (int)cubePosLocal.x - (chunkWidth - 1) * (int)faceNormal.x;
             int posY = faceNormal.y == 0 ? (int)cubePosLocal.y : (int)cubePosLocal.y - (chunkHeight - 1) * (int)faceNormal.y;
             int posZ = faceNormal.z == 0 ? (int)cubePosLocal.z : (int)cubePosLocal.z - (chunkWidth - 1) * (int)faceNormal.z;
 
             Vector3Int blockIndex = new Vector3Int(posX, posY, posZ);
-            result.hasNeighborChunkCube = chunks[physicalChunkID].HasBlockAt(blockIndex); 
+            result.hasNeighborChunkCube = chunks[physicalChunkID].HasBlockAt(blockIndex);
 
             result.hasNeighborChunk = true;
         }
@@ -259,7 +261,7 @@ public class TerrainGenerator : MonoBehaviour
     }
 
 
-    
+
 
     public Vector3Int GetChunkIDFromPos(Vector3 pos) //Need fix?
     {
@@ -276,7 +278,7 @@ public class TerrainGenerator : MonoBehaviour
 
     private void UpdateDynamicChunkLoading()
     {
-        if( chunks.Length > 0)
+        if (chunks.Length > 0)
         {
             Vector3 playerPos = player.transform.position;
             playerPos.x = (int)playerPos.x;
@@ -286,11 +288,11 @@ public class TerrainGenerator : MonoBehaviour
 
 
 
-            if (currentPlayerChunkID != GetChunkIDFromPos(playerPos) )//&& IsChunkeLoaded(GetChunkIDFromPos(playerPos)) == false)
+            if (currentPlayerChunkID != GetChunkIDFromPos(playerPos))//&& IsChunkeLoaded(GetChunkIDFromPos(playerPos)) == false)
             {
                 Debug.Log("Player is in chunk: " + GetChunkIDFromPos(playerPos));
 
-                
+
                 CalculateEmptyChunksInAreaOfPlay();
 
             }
@@ -316,13 +318,15 @@ public class TerrainGenerator : MonoBehaviour
 
             Chunk chunkToMove = GetFurthestChunkFromPos(playerPos);
 
-            chunkToMove.transform.position = new Vector3(emptyChunks[index].x * chunkWidth,
-                                                         emptyChunks[index].y * chunkHeight,
-                                                         emptyChunks[index].z * chunkWidth);
+            Vector3Int position;
 
-            Vector3Int newChunkID = GetChunkIDFromPos(chunkToMove.transform.position);
-            chunkToMove.chunkID = newChunkID;
-            
+            position = new Vector3Int(emptyChunks[index].x , emptyChunks[index].y , emptyChunks[index].z );
+
+            chunkToMove.transform.position = position;
+
+           // Vector3Int newChunkID = chunkToMove.transform.pos;
+            chunkToMove.chunkID = position;
+
             emptyChunks.RemoveAt(index);
         }
     }
@@ -339,7 +343,7 @@ public class TerrainGenerator : MonoBehaviour
         {
             float distance = (chunks[i].transform.position - pos).magnitude;
             //Debug.Log("ID: " + chunks[i].chunkID + ", " + distance + ", " + furthestDistance);
-            if(distance > furthestDistance)
+            if (distance > furthestDistance)
             {
                 chunk = chunks[i];
                 chunk.physicalChunkID = chunks[i].physicalChunkID;
@@ -355,6 +359,7 @@ public class TerrainGenerator : MonoBehaviour
         emptyChunks.Clear();
 
         Vector3Int playerPos = Vector3Int.FloorToInt(player.transform.position);
+        Vector3Int id;
 
         for (int x = 0; x < width; x++)
         {
@@ -362,9 +367,12 @@ public class TerrainGenerator : MonoBehaviour
             {
                 for (int z = 0; z < lenght; z++)
                 {
-                    if (IsChunkeLoaded(areaOfPlay[x, y, z] + playerPos) == false)
+                    id =  playerPos;
+                    id += new Vector3Int(areaOfPlay[x, y, z].x * chunkWidth, areaOfPlay[x, y, z].y * chunkHeight, areaOfPlay[x, y, z].z * chunkWidth);
+
+                    if (IsChunkeLoaded(id) == false)
                     {
-                        AddChunkIDToEmpyChunksQueue(areaOfPlay[x, y, z] + playerPos);
+                        AddChunkIDToEmpyChunksQueue(id);
                     }
                 }
             }
@@ -382,7 +390,7 @@ public class TerrainGenerator : MonoBehaviour
 
         int indexToAddTo = 0;
 
-        for(int i = 0; i < emptyChunks.Count; i++)
+        for (int i = 0; i < emptyChunks.Count; i++)
         {
             if ((playerPos - emptyChunks[i]).magnitude < distanceToPlayer)
             {
@@ -397,10 +405,10 @@ public class TerrainGenerator : MonoBehaviour
 
 
     private bool IsChunkeLoaded(Vector3Int chunkID)
-    { 
+    {
         for (int i = 0; i < chunks.Length; i++)
         {
-            if(chunks[i].chunkID == chunkID)
+            if (chunks[i].chunkID == chunkID)
             {
                 return true;
             }

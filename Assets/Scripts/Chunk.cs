@@ -74,7 +74,7 @@ public class Chunk : MonoBehaviour
         chunkWidth = width;
         chunkHeight = height;
 
-        transform.position = new Vector3(chunkPos.x * chunkWidth, chunkPos.y * chunkHeight, chunkPos.z * chunkWidth);
+        transform.position = new Vector3(chunkPos.x, chunkPos.y, chunkPos.z);
         chunkBlocks = new bool[chunkWidth, chunkHeight, chunkWidth];
 
         maxNrOfCubes = chunkWidth * chunkHeight * chunkWidth;
