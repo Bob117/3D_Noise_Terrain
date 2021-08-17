@@ -186,7 +186,7 @@ MonoBehaviour:
   height: 1
   lenght: 3
   ChunkPrefab: {fileID: 1342640618060861989, guid: 2a07317aba954c746949f0ad4bd70eb5, type: 3}
-  chunkWidth: 2
+  chunkWidth: 1
   chunkHeight: 2
   nrOfCubes: 2
   nrOfFaces: 0

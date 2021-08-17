@@ -15,6 +15,7 @@ public class Chunk : MonoBehaviour
 
 
     [SerializeField] private Vector3 chunkPosition;
+    public bool inPlay = true;
 
     [SerializeField] private int maxNrOfCubes;
     [SerializeField] private int nrOfCubes;
