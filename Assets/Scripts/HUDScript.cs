@@ -6,12 +6,20 @@ using UnityEngine.UI;
 
 public class HUDScript : MonoBehaviour
 {
+
+    public static HUDScript Instance { get; private set; }
+
     public Text fpsCounterText;
     public Text maxFpsText;
     public Text minFpsText;
+    public Text nrOfChunksText;
+    public Text nrOfCubesText;
     private int fpsCounter;
     private int maxFps;
     private int minFps;
+    public int nrOfChunks;
+    public int nrOfLoadedChunks;
+    public int nrOfCubes;
 
     public float delayStartTime;
 
@@ -20,6 +28,11 @@ public class HUDScript : MonoBehaviour
     public int samples = 100;
     public float totalTime;
 
+    void Awake()
+    {
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -57,6 +70,9 @@ public class HUDScript : MonoBehaviour
             minFpsText.text = "Min FPS: " + minFps;
         }
 
+        
+        nrOfChunksText.text = "#Chunks: " + nrOfLoadedChunks + "/" + nrOfChunks;
+        nrOfCubesText.text = "#Cubes: " + nrOfCubes;
 
     }
 }
