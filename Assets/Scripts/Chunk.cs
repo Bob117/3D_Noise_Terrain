@@ -16,6 +16,8 @@ public class Chunk : MonoBehaviour
 
     [SerializeField] private Vector3 chunkPosition;
     public bool inPlay = true;
+    public float distanceToPlayer;
+
 
     [SerializeField] private int maxNrOfCubes;
     [SerializeField] private int nrOfCubes;
@@ -90,7 +92,7 @@ public class Chunk : MonoBehaviour
         int index = 0;
         for (int x = 0; x < chunkWidth; x++)
         {
-            for (int y = 0; y < chunkHeight-1; y++)
+            for (int y = 0; y < chunkHeight; y++)
             {
                 for (int z = 0; z < chunkWidth; z++)
                 {
@@ -113,16 +115,16 @@ public class Chunk : MonoBehaviour
                     //    chunkBlocks[x, y, z] = false;
                     //}
 
-                    //if (index % 2 == 0)
-                    //{
-                    //    chunkBlocks[x, y, z] = true;
-                    //}
-                    //else
-                    //{
-                    //    chunkBlocks[x, y, z] = false;
-                    //}
+                    if (index % 2 == 0)
+                    {
+                        chunkBlocks[x, y, z] = true;
+                    }
+                    else
+                    {
+                        chunkBlocks[x, y, z] = false;
+                    }
 
-                    chunkBlocks[x, y, z] = true;
+                    //chunkBlocks[x, y, z] = true;
 
 
                     index++;
@@ -496,6 +498,8 @@ public class Chunk : MonoBehaviour
 
     public void ApplyMeshData()
     {
+         st.Start();
+
         Vector3[] verticesBuffer = new Vector3[NR_OF_VERTICES_PER_CUBES * nrOfCubes];
         Vector3[] normalsBuffer = new Vector3[NR_OF_VERTICES_PER_CUBES * nrOfCubes];
         Vector2[] uvBuffer = new Vector2[NR_OF_UV_PER_CUBES * nrOfCubes];
@@ -537,6 +541,10 @@ public class Chunk : MonoBehaviour
         HUDScript.Instance.nrOfCubes += nrOfCubes;
         HUDScript.Instance.nrOfLoadedChunks++;
 
+        st.Stop();
+        createTime = st.ElapsedMilliseconds;
+        HUDScript.Instance.averageChunkCreationTime += createTime;
+       // Debug.Log(string.Format("Creating chunk mesh took {0} ms to complete", createTime));
     }
 
 

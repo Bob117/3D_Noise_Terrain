@@ -66,6 +66,7 @@ public class TerrainGenerator : MonoBehaviour
     public static Chunk[] chunks;
     public Vector3Int[,,] areaOfPlay; //3D grid with chunk offsets relativ to the player. Add the player pos to this to get chunk id.
     public List<Vector3Int> emptyChunks;
+    public List<int> outOfPlayChunks;
 
     private int nrOfCreatedChunks = 0;
 
@@ -75,7 +76,7 @@ public class TerrainGenerator : MonoBehaviour
 
     private int loadedChunks = 0;
     private bool loadAllChunks = false;
-    private float chunkLoadDelay = 0.1f;
+    private float chunkLoadDelay = 0.0f;
     private float chunkLoadDelayCounter = 0.0f;
 
     private JobHandle jobHandle;
@@ -142,7 +143,7 @@ public class TerrainGenerator : MonoBehaviour
             isCreated = true;
         }
 
-        if (isCreated)
+        if (isCreated && loadedChunks == chunks.Length)
         {
             UpdateDynamicChunkLoading();
         }
@@ -173,10 +174,14 @@ public class TerrainGenerator : MonoBehaviour
             {
                 //GetChunk(loadedChunks).GetComponent<Chunk>().CreateMeshData();
                 GetChunk(loadedChunks).GetComponent<Chunk>().ApplyMeshData();
-                
+
                 loadedChunks++;
                 chunkLoadDelayCounter = 0.0f;
-                
+
+                if (loadedChunks == chunks.Length)
+                {
+                    HUDScript.Instance.averageChunkCreationTime /= loadedChunks;
+                }
             }
         }
 
@@ -230,9 +235,9 @@ public class TerrainGenerator : MonoBehaviour
 
 
         // Schedule the job with one Execute per index in the results array and only 1 item per processing batch
-         jobHandle = jobData.Schedule(chunks.Length, 1);
+        jobHandle = jobData.Schedule(chunks.Length, 1);
         // Wait for the job to complete
-         jobHandle.Complete();
+        jobHandle.Complete();
 
         //for (int i = 0; i < chunks.Length; i++)
         //{
@@ -315,7 +320,7 @@ public class TerrainGenerator : MonoBehaviour
 
             currentPlayerChunkID = playerPos;
 
-            // FillEmptyChunk();
+            FillEmptyChunk();
         }
 
 
@@ -326,13 +331,15 @@ public class TerrainGenerator : MonoBehaviour
         if (emptyChunks.Count > 0)
         {
 
-            Vector3 playerPos = player.transform.position;
-            playerPos.x = (int)playerPos.x;
-            playerPos.y = (int)playerPos.y;
-            playerPos.z = (int)playerPos.z;
+            //Vector3 playerPos = player.transform.position;
+            //playerPos.x = (int)playerPos.x;
+            //playerPos.y = (int)playerPos.y;
+            //playerPos.z = (int)playerPos.z;
             int index = 0;
 
-            Chunk chunkToMove = GetFurthestChunkFromPos(playerPos);
+            Chunk chunkToMove = GetFurthestOutOfPlayChunk(currentPlayerChunkID);
+            Debug.Log("chunkToMove ID: " + chunkToMove.chunkID);
+
             chunkToMove.inPlay = true;
             Vector3Int position;
 
@@ -347,22 +354,24 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    private Chunk GetFurthestChunkFromPos(Vector3 pos)
+    private Chunk GetFurthestOutOfPlayChunk(Vector3 pos)
     {
         Chunk chunk;
-        chunk = chunks[0];
+        chunk = chunks[outOfPlayChunks[0]];
         chunk.physicalChunkID = 0;
-        float furthestDistance = (chunks[0].transform.position - pos).magnitude;
+        float furthestDistance = (chunks[outOfPlayChunks[0]].chunkID - pos).magnitude;
 
 
-        for (int i = 1; i < chunks.Length; i++)
+        for (int i = 1; i < outOfPlayChunks.Count; i++)
         {
-            float distance = (chunks[i].transform.position - pos).magnitude;
-            //Debug.Log("ID: " + chunks[i].chunkID + ", " + distance + ", " + furthestDistance);
-            if (distance > furthestDistance && chunks[i].inPlay == false)
+            int chunkArrayID = outOfPlayChunks[i];
+            float distance = (chunks[chunkArrayID].chunkID - pos).magnitude;
+            chunk.distanceToPlayer = distance;
+            // Debug.Log("ID: " + chunks[i].chunkID + ", " + distance + ", " + furthestDistance);
+            if (distance > furthestDistance && chunks[chunkArrayID].inPlay == false)
             {
-                chunk = chunks[i];
-                chunk.physicalChunkID = chunks[i].physicalChunkID;
+                chunk = chunks[chunkArrayID];
+                chunk.physicalChunkID = chunks[chunkArrayID].physicalChunkID;
                 furthestDistance = distance;
             }
         }
@@ -370,13 +379,13 @@ public class TerrainGenerator : MonoBehaviour
         return chunk;
     }
 
-    private void CalculateEmptyChunksInAreaOfPlay() //in play doesnt work as intended 
+    private void CalculateEmptyChunksInAreaOfPlay()
     {
         emptyChunks.Clear();
 
-        Vector3Int playerPos = Vector3Int.FloorToInt(player.transform.position);
-        Vector3Int id;
-        int index = chunks.Length - 1;
+
+        Vector3Int emptyChunkId;
+        int index = 0;
 
         for (int x = 0; x < width; x++)
         {
@@ -384,21 +393,24 @@ public class TerrainGenerator : MonoBehaviour
             {
                 for (int z = 0; z < lenght; z++)
                 {
-                    id = GetChunkIDFromPos(playerPos);
-                    id += new Vector3Int(areaOfPlay[x, y, z].x, areaOfPlay[x, y, z].y, areaOfPlay[x, y, z].z);
 
-                    chunks[index].inPlay = false;
+                    //Check out of play
+                    chunks[index].inPlay = IsChunkInAreaOfPlay(chunks[index].chunkID);
 
-                    if (IsChunkeLoaded(id) == false)
+                    if (chunks[index].inPlay == false)
                     {
-                        AddChunkIDToEmpyChunksQueue(id);
-                    }
-                    else
-                    {
-                        chunks[index].inPlay = true;
+                        outOfPlayChunks.Add(index);
                     }
 
-                    index--;
+                    //Check if empty chunk
+                    emptyChunkId = GetChunkIDFromPos(player.transform.position);
+                    emptyChunkId += new Vector3Int(areaOfPlay[x, y, z].x, areaOfPlay[x, y, z].y, areaOfPlay[x, y, z].z);
+
+                    if (IsChunkeLoaded(emptyChunkId) == false)
+                    {
+                        AddChunkIDToEmpyChunksQueue(emptyChunkId);
+                    }
+                    index++;
                 }
             }
         }
@@ -406,7 +418,7 @@ public class TerrainGenerator : MonoBehaviour
         print("Nr of empty chunks: " + emptyChunks.Count);
     }
 
-    private void AddChunkIDToEmpyChunksQueue(Vector3Int chunkID) //Doesnt seem to work as intended
+    private void AddChunkIDToEmpyChunksQueue(Vector3Int chunkID)
     {
         //Could add so one cant add the same chunk more than once
 
@@ -459,5 +471,24 @@ public class TerrainGenerator : MonoBehaviour
         return -1;
     }
 
+    private bool IsChunkInAreaOfPlay(Vector3Int chunkID)
+    {
+        Vector3Int playerPos = GetChunkIDFromPos(player.transform.position);
 
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int z = 0; z < lenght; z++)
+                {
+                    if (chunkID == playerPos + new Vector3Int(areaOfPlay[x, y, z].x, areaOfPlay[x, y, z].y, areaOfPlay[x, y, z].z))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }
