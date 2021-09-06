@@ -92,19 +92,19 @@ public class Chunk : MonoBehaviour
         int index = 0;
         for (int x = 0; x < chunkWidth; x++)
         {
-            for (int y = 0; y < chunkHeight-1; y++)
+            for (int y = 0; y < chunkHeight; y++)
             {
                 for (int z = 0; z < chunkWidth; z++)
                 {
-                    //int rand = Random.Range(0, 100);
-                    //if (rand == 1)
-                    //{
-                    //    chunkBlocks[x, y, z] = true;
-                    //}
-                    //else
-                    //{
-                    //    chunkBlocks[x, y, z] = false;
-                    //}
+                    int rand = Random.Range(0, 100);
+                    if (rand == 1)
+                    {
+                        chunkBlocks[x, y, z] = true;
+                    }
+                    else
+                    {
+                        chunkBlocks[x, y, z] = false;
+                    }
 
                     //if (y < z)
                     //{
@@ -124,7 +124,7 @@ public class Chunk : MonoBehaviour
                     //    chunkBlocks[x, y, z] = false;
                     //}
 
-                    chunkBlocks[x, y, z] = true;
+                    //chunkBlocks[x, y, z] = true;
 
 
                     index++;
@@ -177,7 +177,7 @@ public class Chunk : MonoBehaviour
 
         if (isBorderCube)
         {
-            neighborCheckResult = TerrainGenerator.Instance.BlockHasChunkNeighbor(chunkPosition, cubePosLocal, faceNormal);
+            neighborCheckResult = TerrainGenerator.Instance.BlockHasChunkNeighbor(chunkID, cubePosLocal, faceNormal);
             nrOfBorderFaces++;
         }
 
@@ -195,7 +195,7 @@ public class Chunk : MonoBehaviour
         //Front
         if (ShouldDrawFace(cubePosLocal, normal_front, isBorderCube))
         {
-            faceStructure[nrOfCubes*6 + 0] = true;
+            faceStructure[nrOfCubes * 6 + 0] = true;
             nrOfFacesToContstruct++;
         }
 
@@ -240,7 +240,7 @@ public class Chunk : MonoBehaviour
         nrOfCubes++;
     }
 
-    private void CreateCube(int index,  bool[] faceStructure, Vector3[] vertices, Vector3[] normals, Vector2[] uv, int[] triangles, Vector3 cubePosLocal)
+    private void CreateCube(int index, bool[] faceStructure, Vector3[] vertices, Vector3[] normals, Vector2[] uv, int[] triangles, Vector3 cubePosLocal)
     {
 
 
@@ -498,7 +498,7 @@ public class Chunk : MonoBehaviour
 
     public void ApplyMeshData()
     {
-         st.Start();
+        st.Start();
 
         Vector3[] verticesBuffer = new Vector3[NR_OF_VERTICES_PER_CUBES * nrOfCubes];
         Vector3[] normalsBuffer = new Vector3[NR_OF_VERTICES_PER_CUBES * nrOfCubes];
@@ -544,7 +544,7 @@ public class Chunk : MonoBehaviour
         st.Stop();
         createTime = st.ElapsedMilliseconds;
         HUDScript.Instance.averageChunkCreationTime += createTime;
-       // Debug.Log(string.Format("Creating chunk mesh took {0} ms to complete", createTime));
+        // Debug.Log(string.Format("Creating chunk mesh took {0} ms to complete", createTime));
     }
 
 
