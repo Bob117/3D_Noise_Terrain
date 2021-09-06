@@ -335,54 +335,53 @@ public class TerrainGenerator : MonoBehaviour
             //playerPos.x = (int)playerPos.x;
             //playerPos.y = (int)playerPos.y;
             //playerPos.z = (int)playerPos.z;
-            int index = 0;
+            int emptyChunkIndex = 0;
+            int chunkToMoveIndex = GetFurthestOutOfPlayChunkIndex(currentPlayerChunkID); 
 
-            Chunk chunkToMove = GetFurthestOutOfPlayChunk(currentPlayerChunkID);
+            Chunk chunkToMove = chunks[outOfPlayChunks[chunkToMoveIndex]];
             Debug.Log("chunkToMove ID: " + chunkToMove.chunkID);
 
             chunkToMove.inPlay = true;
             Vector3Int position;
 
-            position = new Vector3Int(emptyChunks[index].x * chunkWidth, emptyChunks[index].y * chunkHeight, emptyChunks[index].z * chunkWidth);
+            position = new Vector3Int(emptyChunks[emptyChunkIndex].x * chunkWidth, emptyChunks[emptyChunkIndex].y * chunkHeight, emptyChunks[emptyChunkIndex].z * chunkWidth);
 
             chunkToMove.transform.position = position;
 
             // Vector3Int newChunkID = chunkToMove.transform.pos;
             chunkToMove.chunkID = GetChunkIDFromPos(position);
 
-            emptyChunks.RemoveAt(index);
+            emptyChunks.RemoveAt(emptyChunkIndex);
+            outOfPlayChunks.RemoveAt(chunkToMoveIndex);
+
         }
     }
 
-    private Chunk GetFurthestOutOfPlayChunk(Vector3 pos)
+    private int GetFurthestOutOfPlayChunkIndex(Vector3 pos)
     {
-        Chunk chunk;
-        chunk = chunks[outOfPlayChunks[0]];
-        chunk.physicalChunkID = 0;
+        int index = 0;
         float furthestDistance = (chunks[outOfPlayChunks[0]].chunkID - pos).magnitude;
-
-
+        
         for (int i = 1; i < outOfPlayChunks.Count; i++)
         {
             int chunkArrayID = outOfPlayChunks[i];
             float distance = (chunks[chunkArrayID].chunkID - pos).magnitude;
-            chunk.distanceToPlayer = distance;
+          
             // Debug.Log("ID: " + chunks[i].chunkID + ", " + distance + ", " + furthestDistance);
             if (distance > furthestDistance && chunks[chunkArrayID].inPlay == false)
             {
-                chunk = chunks[chunkArrayID];
-                chunk.physicalChunkID = chunks[chunkArrayID].physicalChunkID;
                 furthestDistance = distance;
+                index = i;
             }
         }
 
-        return chunk;
+        return index;
     }
 
     private void CalculateEmptyChunksInAreaOfPlay()
     {
         emptyChunks.Clear();
-
+        outOfPlayChunks.Clear();
 
         Vector3Int emptyChunkId;
         int index = 0;

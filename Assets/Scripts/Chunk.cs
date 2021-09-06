@@ -92,7 +92,7 @@ public class Chunk : MonoBehaviour
         int index = 0;
         for (int x = 0; x < chunkWidth; x++)
         {
-            for (int y = 0; y < chunkHeight; y++)
+            for (int y = 0; y < chunkHeight-1; y++)
             {
                 for (int z = 0; z < chunkWidth; z++)
                 {
@@ -115,16 +115,16 @@ public class Chunk : MonoBehaviour
                     //    chunkBlocks[x, y, z] = false;
                     //}
 
-                    if (index % 2 == 0)
-                    {
-                        chunkBlocks[x, y, z] = true;
-                    }
-                    else
-                    {
-                        chunkBlocks[x, y, z] = false;
-                    }
+                    //if (index % 2 == 0)
+                    //{
+                    //    chunkBlocks[x, y, z] = true;
+                    //}
+                    //else
+                    //{
+                    //    chunkBlocks[x, y, z] = false;
+                    //}
 
-                    //chunkBlocks[x, y, z] = true;
+                    chunkBlocks[x, y, z] = true;
 
 
                     index++;
