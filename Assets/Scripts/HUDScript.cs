@@ -13,7 +13,8 @@ public class HUDScript : MonoBehaviour
     public Text maxFpsText;
     public Text minFpsText;
     public Text nrOfChunksText;
-    public Text nrOfCubesText; 
+    public Text nrOfCubesText;
+    public Text nrOfFacesText;
     public Text averageChunkCreationTimeText;
     private int fpsCounter;
     private int maxFps;
@@ -21,6 +22,7 @@ public class HUDScript : MonoBehaviour
     public int nrOfChunks;
     public int nrOfLoadedChunks;
     public int nrOfCubes;
+    public int nrOfFaces;
     public float averageChunkCreationTime;
 
     public float delayStartTime;
@@ -75,6 +77,7 @@ public class HUDScript : MonoBehaviour
         
         nrOfChunksText.text = "#Chunks: " + nrOfLoadedChunks + "/" + nrOfChunks;
         nrOfCubesText.text = "#Cubes: " + nrOfCubes;
+        nrOfFacesText.text = "#Faces: " + nrOfFaces;
         averageChunkCreationTimeText.text = "AVG chunk ms: " + averageChunkCreationTime;
 
     }

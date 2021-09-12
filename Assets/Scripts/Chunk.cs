@@ -2,7 +2,7 @@
 using UnityEngine;
 using Unity.Collections.LowLevel.Unsafe;
 using Debug = UnityEngine.Debug;
-
+using UnityEngine.Rendering;
 
 
 public class Chunk : MonoBehaviour
@@ -56,6 +56,8 @@ public class Chunk : MonoBehaviour
     Vector3 normal_bottom = new Vector3(0, -1, 0);
     Vector3 normal_back = new Vector3(0, 0, 1);
 
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -77,8 +79,6 @@ public class Chunk : MonoBehaviour
 
 
 
-
-
         chunkPosition = chunkPos;
         chunkWidth = width;
         chunkHeight = height;
@@ -96,15 +96,15 @@ public class Chunk : MonoBehaviour
             {
                 for (int z = 0; z < chunkWidth; z++)
                 {
-                    int rand = Random.Range(0, 100);
-                    if (rand == 1)
-                    {
-                        chunkBlocks[x, y, z] = true;
-                    }
-                    else
-                    {
-                        chunkBlocks[x, y, z] = false;
-                    }
+                    //int rand = Random.Range(0, 100);
+                    //if (rand == 1)
+                    //{
+                    //    chunkBlocks[x, y, z] = true;
+                    //}
+                    //else
+                    //{
+                    //    chunkBlocks[x, y, z] = false;
+                    //}
 
                     //if (y < z)
                     //{
@@ -125,6 +125,9 @@ public class Chunk : MonoBehaviour
                     //}
 
                     //chunkBlocks[x, y, z] = true;
+
+
+                    chunkBlocks[x, y, z] = TerrainGenerator.Instance.Get3DPerlinNoise(new Vector3(chunkPos.x + x, chunkPos.y + y, chunkPos.z + z));
 
 
                     index++;
@@ -174,18 +177,31 @@ public class Chunk : MonoBehaviour
         neighborCheckResult.hasNeighborChunk = true;
         neighborCheckResult.hasNeighborChunkCube = false;
 
-
+        //isBorderCube = true;
         if (isBorderCube)
         {
             neighborCheckResult = TerrainGenerator.Instance.BlockHasChunkNeighbor(chunkID, cubePosLocal, faceNormal);
             nrOfBorderFaces++;
         }
 
-        if (HasBlockAt(neighborIndex) || neighborCheckResult.hasNeighborChunkCube == true ||
-            (isBorderCube && neighborCheckResult.hasNeighborChunk == false && IsIndexInsideChunk(neighborIndex) == false))
+        
+        if (HasBlockAt(neighborIndex)) //If side so to side with block in same chunk 
         {
             result = false;
         }
+        else if (neighborCheckResult.hasNeighborChunkCube == true)//If side so to side with block in neighbor chunk 
+        {
+            result = false;
+        }
+        else if (isBorderCube && IsIndexInsideChunk(neighborIndex) == false && neighborCheckResult.hasNeighborChunk == false)// If face is at edge of the world
+        {
+            result = false;
+        }
+
+
+
+
+
 
         return result;
     }
@@ -531,14 +547,28 @@ public class Chunk : MonoBehaviour
         mesh.uv = uvBuffer;
         mesh.SetTriangles(trianglesBuffer, 0);
 
+        var layout = new[]
+        {
+
+            new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float16, 4),
+            new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float16, 4),
+            new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.SNorm8, 4),
+        };
+
+        mesh.SetVertexBufferParams(NR_OF_VERTICES_PER_CUBES * nrOfCubes, layout);
+
+
+
+
+        GetComponent<MeshCollider>().sharedMesh = mesh;
         mesh.UploadMeshData(true);
         GetComponent<MeshRenderer>().material = testMaterial;
 
-        GetComponent<MeshCollider>().sharedMesh = mesh;
 
         TerrainGenerator.Instance.nrOfCubes += nrOfCubes;
         TerrainGenerator.Instance.nrOfFaces += nrOfConstructedFaces;
         HUDScript.Instance.nrOfCubes += nrOfCubes;
+        HUDScript.Instance.nrOfFaces += nrOfConstructedFaces;
         HUDScript.Instance.nrOfLoadedChunks++;
 
         st.Stop();
