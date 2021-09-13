@@ -75,9 +75,15 @@ public class Chunk : MonoBehaviour
     public void InitChunk(Vector3 chunkPos, int width, int height)
     {
         mesh = GetComponent<MeshFilter>().mesh;
+        mesh.Clear();
+  
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 
-
+        
+        nrOfCubes = 0;
+        nrOfBorderFaces = 0;
+        nrOfFacesToContstruct = 0;
+        nrOfConstructedFaces = 0;
 
         chunkPosition = chunkPos;
         chunkWidth = width;
@@ -124,7 +130,7 @@ public class Chunk : MonoBehaviour
                     //    chunkBlocks[x, y, z] = false;
                     //}
 
-                    //chunkBlocks[x, y, z] = true;
+                   //chunkBlocks[x, y, z] = true;
 
 
                     chunkBlocks[x, y, z] = TerrainGenerator.Instance.Get3DPerlinNoise(new Vector3(chunkPos.x + x, chunkPos.y + y, chunkPos.z + z));
@@ -480,7 +486,7 @@ public class Chunk : MonoBehaviour
     {
         // st.Start();
 
-
+        
         meshFaceStructure = new bool[6 * maxNrOfCubes];
 
         Vector3 position = new Vector3(0, 0, 0);
@@ -561,7 +567,7 @@ public class Chunk : MonoBehaviour
 
 
         GetComponent<MeshCollider>().sharedMesh = mesh;
-        mesh.UploadMeshData(true);
+        //mesh.UploadMeshData(true);
         GetComponent<MeshRenderer>().material = testMaterial;
 
 

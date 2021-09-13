@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 3440
     height: 1357
   m_ShowMode: 4
-  m_Title: Inspector
+  m_Title: Hierarchy
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_MinSize: {x: 507, y: 271}
   m_MaxSize: {x: 14002, y: 10021}
   vertical: 0
-  controlID: 125
+  controlID: 97
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -225,7 +225,7 @@ MonoBehaviour:
   m_MinSize: {x: 881, y: 492}
   m_MaxSize: {x: 16006, y: 14042}
   vertical: 1
-  controlID: 60
+  controlID: 14
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_MinSize: {x: 881, y: 221}
   m_MaxSize: {x: 16006, y: 4021}
   vertical: 0
-  controlID: 61
+  controlID: 15
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -527,21 +527,21 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 62f5ffff86f5ffff36f6ffff88f8ffffacf8ffffbaf8ffff34f9ffff58f9ffff08faffff5efbffff223a0000423c0000
+      m_ExpandedIDs: 0458ffff2858ffff3858ffff1659ffff3a59ffffec59ffff36f3ffff5af3ffff68f3ffffdcf3ffff00f4ffffb0f4fffff0f5ffff14f6ffffc4f6ffff6ef7ffff92f7ffff42f8ffff0af9ffff2ef9ffff3cf9ffff9ef9ffffc2f9ffff72faffff5efbfffff4ffffffbc420000947c0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: ChunkAverageTime
+        m_OriginalName: ChunkAverageTime
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: 17116
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 11}
       m_SearchString: 
@@ -587,9 +587,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 4.0125136, y: 100, z: 80}
+    m_Target: {x: -20, y: 17, z: -19}
     speed: 2
-    m_Value: {x: 4.0125136, y: 100, z: 80}
+    m_Value: {x: -20, y: 17, z: -19}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -636,17 +636,17 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 1
   m_Rotation:
-    m_Target: {x: 0.38235047, y: -0.27545002, z: 0.120557405, w: 0.8737458}
+    m_Target: {x: 0.3651812, y: -0.07276353, z: 0.028595334, w: 0.9277252}
     speed: 2
-    m_Value: {x: 0.3823447, y: -0.27544585, z: 0.12055558, w: 0.87373257}
+    m_Value: {x: 0.365155, y: -0.07275831, z: 0.028593281, w: 0.9276586}
   m_Size:
-    m_Target: 0.8660254
+    m_Target: 27.712812
     speed: 2
-    m_Value: 0.8660254
+    m_Value: 27.712812
   m_Ortho:
-    m_Target: 1
+    m_Target: 0
     speed: 2
-    m_Value: 1
+    m_Value: 0
   m_CameraSettings:
     m_Speed: 1.2803607
     m_SpeedNormalized: 0.64000034
@@ -660,7 +660,7 @@ MonoBehaviour:
     m_FarClip: 10000
     m_DynamicClip: 1
     m_OcclusionCulling: 0
-  m_LastSceneViewRotation: {x: 0.2288472, y: 0.41966793, z: -0.110202655, w: 0.8714191}
+  m_LastSceneViewRotation: {x: -0.03562325, y: 0.9642986, z: 0.19046801, w: 0.18060838}
   m_LastSceneViewOrtho: 0
   m_ReplacementShader: {fileID: 0}
   m_ReplacementString: 
@@ -704,7 +704,8 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SkipHidden: 0
     m_SearchArea: 1
-    m_Folders: []
+    m_Folders:
+    - Assets/Materials
     m_Globs: []
   m_ViewMode: 0
   m_StartGridSize: 16
@@ -717,7 +718,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 74a40000
     m_LastClickedID: 42100
-    m_ExpandedIDs: 00000000dc3a0000de3a0000e03a0000e23a0000e43a0000e63a0000
+    m_ExpandedIDs: 00000000da3a0000dc3a0000de3a0000e03a0000e23a0000e43a0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -745,21 +746,21 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: ffffffff00000000dc3a0000de3a0000e03a0000e23a0000e43a0000e63a0000
+    m_ExpandedIDs: ffffffff00000000da3a0000dc3a0000de3a0000e03a0000e23a0000e43a0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: 
-      m_OriginalName: 
+      m_Name: TestMaterial
+      m_OriginalName: TestMaterial
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 0
+      m_UserData: 14984
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 11
+      m_OriginalEventType: 0
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 13}
     m_SearchString: 

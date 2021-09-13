@@ -298,12 +298,13 @@ public class TerrainGenerator : MonoBehaviour
 
     public Vector3Int GetChunkIDFromPos(Vector3 pos)
     {
-       
-        pos.x = (pos.x / chunkWidth);
-        pos.y = (pos.y / chunkHeight);
-        pos.z = (pos.z / chunkWidth);
+        float offset = 1000.0f; //To come away from the -0 and 0 rounding problem 
 
-        Vector3Int chunkID = Vector3Int.CeilToInt(pos);
+        pos.x = (pos.x * offset) / (chunkWidth * offset);
+        pos.y = (pos.y * offset) / (chunkHeight * offset);
+        pos.z = (pos.z * offset) / (chunkWidth * offset);
+
+        Vector3Int chunkID = Vector3Int.FloorToInt(pos);
 
         return chunkID;
     }
@@ -355,6 +356,10 @@ public class TerrainGenerator : MonoBehaviour
 
             // Vector3Int newChunkID = chunkToMove.transform.pos;
             chunkToMove.chunkID = GetChunkIDFromPos(position);
+
+            //chunkToMove.InitChunk(position, chunkWidth, chunkHeight); //Optimize this
+            //chunkToMove.CreateMeshData();
+            //chunkToMove.ApplyMeshData();
 
             emptyChunks.RemoveAt(emptyChunkIndex);
             outOfPlayChunks.RemoveAt(chunkToMoveIndex);
